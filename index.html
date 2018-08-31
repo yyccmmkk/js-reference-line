@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title ruler</title>
+    <style type="text/css">
+        *{margin:0;padding:0}
+        .box{width:800px;height:800px;margin:0 auto;border:1px solid green;position:relative}
+        .box div{position:absolute;background:green}
+    </style>
+</head>
+<body>
+<!--<div style="height:1000px">向下滚动</div>-->
+<div class="wrapper" style="position:relative;z-index: 2;">
+    <div class="box" id="demo">
+        <div data-query="item"  style="width:100px;height:100px;left:10px;top:20px">1</div>
+        <div data-query="item"  style="width:130px;height:110px;left:250px;top:60px">2</div>
+        <div data-query="item"  style="width:140px;height:80px;left:10px;top:200px;">3</div>
+        <div data-query="item"  style="width:150px;height:130px;left:250px;top:338px">4</div>
+        <div data-query="item"  style="width:140px;height:120px;left:450px;top:338px;">5</div>
+    </div>
+</div>
+
+
+<script src="extern/lodash.js"></script>
+<script src="src/reference-line.js"></script>
+<script>
+    new ReferenceLine().init();
+</script>
+</body>
+</html>
