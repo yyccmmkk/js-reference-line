@@ -19,9 +19,8 @@ js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以�
 
 ### 参数配置
  按照自己的需要进行参数配置，使用默认配置可不传
-
-
-                     <script>
+ 
+              new ReferenceLine({
                       container: doc,//监听鼠标移动的元素
                       range: doc,
                       item: '[data-query="item"]',//需要定位的成员选择器
@@ -43,4 +42,8 @@ js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以�
                       move: function (evt,ele,l,t) {
                       //元素拖动时勾子，提供事年对象，当前移动的元素，及，移动的距离，left top
                       },
-                    </script>
+                }).init()
+
+
+                     
+
