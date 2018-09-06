@@ -66,7 +66,7 @@ export default class ReferenceLine {
         box.addEventListener('mousedown', function (evt) {
             evt.preventDefault();
             let ele;
-            if (!(ele=_this.isItem(evt))) return;
+            if (!(ele = _this.isItem(evt))) return;
             ele.skip = true;
             _this.canvas.style.display = 'block';
             _this.getPosition();
@@ -300,21 +300,27 @@ export default class ReferenceLine {
 
     isItem(evt) {
         let match = this.options.item.match(this.regExp);
-        let m4=match[4]&&match[4].replace(/["'\]]/g, "");
+        let m4 = match[4] && match[4].replace(/["'\]]/g, "");
         if (!match) {
             return false
         }
         if (match[2] === '.') {
-            for(let v of evt.path){
-                if(v.className === match[3]){
+            for (let v of evt.path) {
+                if (v.nodeType !== 1) {
+                    continue
+                }
+                if (v.className === match[3]) {
                     return v;
                 }
             }
 
         }
         if (match[2] === '[') {
-            for(let v of evt.path){
-                if(m4 ? v.getAttribute(match[3]) === m4: v.getAttribute(match[3])){
+            for (let v of evt.path) {
+                if (v.nodeType !== 1) {
+                    continue
+                }
+                if (m4 ? v.getAttribute(match[3]) === m4 : v.getAttribute(match[3])) {
                     return v;
                 }
             }
