@@ -25,7 +25,19 @@
 <script src="extern/lodash.js"></script>
 <script src="src/reference-line.js"></script>
 <script>
-    new ReferenceLine().init();
+    new ReferenceLine({
+        item:'[data-query="item"]',
+        range:'[data-query="canvasBox"]',
+        drag: true,
+        zIndex: 1,//参考线层级
+        lineColor:'red',
+        lineWidth:1,
+        offset: 40,//参考线头尾的延伸距离
+        move:function(evt,ele,l,t){
+
+        }
+
+    }).init();
 </script>
 </body>
 </html>
