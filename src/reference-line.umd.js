@@ -48,7 +48,7 @@ export default class ReferenceLine {
         }, 10);
         if (options.directionKey) {
             doc.addEventListener('keydown', function (evt) {
-                evt.target.nodeName!=="INPUT"&&evt.target.nodeName!=="TEXTAREA"&&evt.preventDefault();
+                //evt.target.nodeName!=="INPUT"&&evt.target.nodeName!=="TEXTAREA"&&evt.preventDefault();
                 if (!_this.target) return;
                 if (_this[evt.code] && evt.ctrlKey) {
                     _this.canvas.style.display = 'block';
