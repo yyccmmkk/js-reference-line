@@ -25,7 +25,7 @@
                     doc.querySelector('body').appendChild(ele);
                 },
                 move: function () {
-                },
+                }
             };
             this.options = Object.assign({}, this.defaults, opt);
         }
@@ -39,6 +39,7 @@
         bindEvent() {
             let _this = this;
             let options = this.options;
+            let cache = options.cache;
             let box = options.container.nodeType ? doc : doc.querySelector(options.container);
             let move = _.debounce((evt) => {
                 this.move(evt);
@@ -47,21 +48,30 @@
                 doc.addEventListener('keydown', function (evt) {
                     //evt.target.nodeName!=="INPUT"&&evt.target.nodeName!=="TEXTAREA"&&evt.preventDefault();
                     if (!_this.target) return;
-                    if (_this[evt.code] && evt.ctrlKey) {
+                    if (_this[evt.code] && (evt.ctrlKey||evt.shiftKey)) {
+                        cache.isShow = true;
                         _this.canvas.style.display = 'block';
                         _this.sl = parseInt(_this.target.style.left);
                         _this.st = parseInt(_this.target.style.top);
                         _this[evt.code](evt.shiftKey ? 10 : 1);
-                        setTimeout(() => {
+                        cache._h = setTimeout(() => {
                             _this.canvas.style.display = 'none';
+                            cache.isShow = null;
                         }, 6000)
                     }
 
                 }, false)
             }
+            doc.addEventListener('wheel', function (evt) {
+                if (cache.isShow) {
+                    _this.canvas.style.display = 'none';
+                    clearTimeout(cache._h);
+                }
+
+            }, false);
 
             box.addEventListener('mousedown', function (evt) {
-                evt.target.nodeName!=="INPUT"&&evt.target.nodeName!=="TEXTAREA"&&evt.preventDefault();
+                evt.target.nodeName !== "INPUT" && evt.target.nodeName !== "TEXTAREA" && evt.preventDefault();
                 let ele;
                 if (!(ele = _this.isItem(evt))) return;
                 ele.skip = true;
