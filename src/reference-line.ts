@@ -119,22 +119,6 @@ export default class ReferenceLine implements referenceLine {
                 })
             }
         });
-        /*box.addEventListener('mousedown', function (evt:any) {
-            evt.target.nodeName !== "INPUT" && evt.target.nodeName !== "TEXTAREA" && evt.preventDefault();
-            let ele:any;
-            if (!(ele = _this.isItem(evt))) return;
-            ele.skip = true;
-            _this.canvas.style.display = 'block';
-            _this.getPosition();
-            _this.target = ele;
-            _this.sl = parseInt(ele.style.left);
-            _this.st = parseInt(ele.style.top);
-            if (ele.isRFItem) {
-                _this.x = evt.clientX;
-                _this.y = evt.clientY;
-                box.addEventListener('mousemove', move, false);
-            }
-        }, false);*/
 
         fromEvent(box,'mouseup').subscribe(()=>{
             if (this.target) {
@@ -143,25 +127,14 @@ export default class ReferenceLine implements referenceLine {
             subscriptionMove.unsubscribe();
             this.clearRect();
         });
-       /* box.addEventListener('mouseup', (evt:any) => {
-            if (this.target) {
-                this.target.skip = null;
-            }
-            box.removeEventListener('mousemove', move);
-            this.clearRect();
-        }, false);*/
+
        fromEvent(box,'click').subscribe(()=>{
            this.target && (this.target.skip = null);
            //subscriptionMove.unsubscribe();
            this.clearRect();
            this.canvas.style.display = 'none';
        });
-      /*  box.addEventListener('click', (evt:any) => {
-            this.target && (this.target.skip = null);
-            box.removeEventListener('mousemove', move);
-            this.clearRect();
-            this.canvas.style.display = 'none';
-        }, false);*/
+
     }
 
     getPosition(): void {
