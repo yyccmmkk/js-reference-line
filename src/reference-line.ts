@@ -375,7 +375,7 @@ export default class ReferenceLine implements referenceLine {
             return false
         }
         if (match[2] === '.') {
-            for (let v of evt.path) {
+            for (let v =evt.target;v;v=v.parentNode) {
                 if (v.nodeType !== 1) {
                     continue
                 }
@@ -386,7 +386,7 @@ export default class ReferenceLine implements referenceLine {
 
         }
         if (match[2] === '[') {
-            for (let v of evt.path) {
+            for (let v =evt.target;v;v=v.parentNode) {
                 if (v.nodeType !== 1) {
                     continue
                 }

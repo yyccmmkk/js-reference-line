@@ -2,7 +2,7 @@
  * Created by zhoulongfei on 2018/8/30.
  * E-mail:36995800@163.com
  */
-;(function(doc,win,undefined){
+;(function (doc, win, undefined) {
     class ReferenceLine {
         constructor(opt) {
             this.regExp = /([a-zA-Z]+)?([\.#\[])?([\w-_]+)?(?:=([\w-_"\]]+))?/;
@@ -48,7 +48,7 @@
                 doc.addEventListener('keydown', function (evt) {
                     //evt.target.nodeName!=="INPUT"&&evt.target.nodeName!=="TEXTAREA"&&evt.preventDefault();
                     if (!_this.target) return;
-                    if (_this[evt.code] && (evt.ctrlKey||evt.shiftKey)) {
+                    if (_this[evt.code] && (evt.ctrlKey || evt.shiftKey)) {
                         cache.isShow = true;
                         _this.canvas.style.display = 'block';
                         _this.sl = parseInt(_this.target.style.left);
@@ -312,7 +312,7 @@
                 return false
             }
             if (match[2] === '.') {
-                for (let v of evt.path) {
+                for (let v = evt.target; v; v = v.parentNode) {
                     if (v.nodeType !== 1) {
                         continue
                     }
@@ -323,7 +323,7 @@
 
             }
             if (match[2] === '[') {
-                for (let v of evt.path) {
+                for (let v = evt.target; v; v = v.parentNode) {
                     if (v.nodeType !== 1) {
                         continue
                     }
@@ -334,9 +334,13 @@
             }
             return false;
         }
+
+        win
+    .
+        ReferenceLine = ReferenceLine;
     }
-    win.ReferenceLine=ReferenceLine;
-})(document,window);
+
+)(document, window);
 
 
 

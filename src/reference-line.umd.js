@@ -51,7 +51,7 @@ export default class ReferenceLine {
             doc.addEventListener('keydown', function (evt) {
                 //evt.target.nodeName!=="INPUT"&&evt.target.nodeName!=="TEXTAREA"&&evt.preventDefault();
                 if (!_this.target) return;
-                if (_this[evt.code] && (evt.ctrlKey||evt.shiftKey)) {
+                if (_this[evt.code] && (evt.ctrlKey || evt.shiftKey)) {
                     cache.isShow = true;
                     _this.canvas.style.display = 'block';
                     _this.sl = parseInt(_this.target.style.left);
@@ -315,7 +315,7 @@ export default class ReferenceLine {
             return false
         }
         if (match[2] === '.') {
-            for (let v of evt.path) {
+            for (let v = evt.target; v; v = v.parentNode) {
                 if (v.nodeType !== 1) {
                     continue
                 }
@@ -326,7 +326,7 @@ export default class ReferenceLine {
 
         }
         if (match[2] === '[') {
-            for (let v of evt.path) {
+            for (let v = evt.target; v; v = v.parentNode) {
                 if (v.nodeType !== 1) {
                     continue
                 }
