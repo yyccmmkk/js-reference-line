@@ -2,8 +2,8 @@
  * Created by zhoulongfei on 2018/10/18.
  * E-mail:36995800@163.com
  */
-import { fromEvent, Unsubscribable} from 'rxjs';
-import {throttleTime} from 'rxjs/operators';
+import {fromEvent, Unsubscribable} from 'rxjs';
+import {throttleTime, auditTime} from 'rxjs/operators';
 
 let _ = require('lodash');
 let win: Window = window;
@@ -11,9 +11,7 @@ let doc: Document = document;
 
 interface setting {
     [propName: string]: any,
-
     move(): any,
-
     createCanvas(ele: any): any
 }
 
@@ -44,10 +42,11 @@ interface referenceLine {
     [index: string]: any;
 }
 
-interface drawCoordinate{
-    vLine:{[x:string]:number};
-    hLine:{[y:string]:number};
+interface drawCoordinate {
+    vLine: { [x: string]: number };
+    hLine: { [y: string]: number };
 }
+
 export default class ReferenceLine implements referenceLine {
     regExp: RegExp = /([a-zA-Z]+)?([\.#\[])?([\w-_]+)?(?:=([\w-_"\]]+))?/;
     defaults: setting = defaultSetting;
@@ -64,20 +63,18 @@ export default class ReferenceLine implements referenceLine {
         this.bindEvent();
     }
 
-    bindEvent():void {
+    bindEvent(): void {
         let _this = this;
         let options = this.options;
         let cache = options.cache;
         let box = options.container.nodeType ? doc : doc.querySelector(options.container);
-        let subscriptionMove:Unsubscribable;
-        let move = _.debounce((evt:any) => {
-            this.move(evt,false);
-        }, 10);
+        let subscriptionMove: Unsubscribable;
+
         if (options.directionKey) {
 
-            fromEvent(doc,'keydown').pipe(
-                throttleTime(1)
-            ).subscribe((evt:any)=>{
+            fromEvent(doc, 'keydown').pipe(
+                auditTime(1)
+            ).subscribe((evt: any) => {
                 if (!_this.target) return;
                 if (_this[evt.code] && (evt.ctrlKey || evt.shiftKey)) {
                     cache.isShow = true;
@@ -93,15 +90,15 @@ export default class ReferenceLine implements referenceLine {
             })
 
         }
-        fromEvent(doc,"wheel").subscribe(()=>{
+        fromEvent(doc, "wheel").subscribe(() => {
             if (cache.isShow) {
                 _this.canvas.style.display = 'none';
                 clearTimeout(cache._h);
             }
         });
-        fromEvent(box,'mousedown').subscribe((evt:any)=>{
+        fromEvent(box, 'mousedown').subscribe((evt: any) => {
             evt.target.nodeName !== "INPUT" && evt.target.nodeName !== "TEXTAREA" && evt.preventDefault();
-            let ele:any;
+            let ele: any;
             if (!(ele = _this.isItem(evt))) return;
             ele.skip = true;
             _this.canvas.style.display = 'block';
@@ -112,28 +109,29 @@ export default class ReferenceLine implements referenceLine {
             if (ele.isRFItem) {
                 _this.x = evt.clientX;
                 _this.y = evt.clientY;
-                subscriptionMove=fromEvent(box,'mousemove').pipe(
-                    throttleTime(10)
-                ).subscribe((evt)=>{
-                    _this.move(evt,false)
+                subscriptionMove = fromEvent(box, 'mousemove').pipe(
+                    auditTime(1)
+                ).subscribe((evt) => {
+                    _this.move(evt, false)
                 })
             }
         });
 
-        fromEvent(box,'mouseup').subscribe(()=>{
+
+        fromEvent(box, 'mouseup').subscribe(() => {
             if (this.target) {
                 this.target.skip = null;
             }
-            subscriptionMove.unsubscribe();
+            subscriptionMove && subscriptionMove.unsubscribe();
             this.clearRect();
         });
 
-       fromEvent(box,'click').subscribe(()=>{
-           this.target && (this.target.skip = null);
-           //subscriptionMove.unsubscribe();
-           this.clearRect();
-           this.canvas.style.display = 'none';
-       });
+        fromEvent(box, 'click').subscribe(() => {
+            this.target && (this.target.skip = null);
+            //subscriptionMove.unsubscribe();
+            this.clearRect();
+            this.canvas.style.display = 'none';
+        });
 
     }
 
@@ -158,8 +156,8 @@ export default class ReferenceLine implements referenceLine {
             this.mapX[bcr.right] ? this.mapX[bcr.right].push(position.length - 1) : (this.mapX[bcr.right] = [position.length - 1]);
 
             if (this.options.center) {
-                xCenter = _.divide(_.add(bcr.right, bcr.left), 2);
-                yCenter = _.divide(_.add(bcr.top, bcr.bottom), 2);
+                xCenter = Math.floor(_.divide(_.add(bcr.right, bcr.left), 2));
+                yCenter = Math.floor(_.divide(_.add(bcr.top, bcr.bottom), 2));
                 this.mapX[xCenter] ? this.mapX[xCenter].push(position.length - 1) : (this.mapX[xCenter] = [position.length - 1]);
                 this.mapY[yCenter] ? this.mapY[yCenter].push(position.length - 1) : (this.mapY[yCenter] = [position.length - 1]);
             }
@@ -168,8 +166,8 @@ export default class ReferenceLine implements referenceLine {
                 this.mapH[wh] ? this.mapH[wh].push(position.length - 1) : (this.mapH[wh] = [position.length - 1]);
             }
 
-            this.mapY[bcr.top] ? this.mapY[bcr.top].push(position.length - 1) : (this.mapY[bcr.top] = [position.length - 1]);
-            this.mapY[bcr.bottom] ? this.mapY[bcr.bottom].push(position.length - 1) : (this.mapY[bcr.bottom] = [position.length - 1]);
+            this.mapY[bcr.top] ? this.mapY[bcr.top].push(position.length - 1) : (this.mapY[Math.floor(+bcr.top)] = [position.length - 1]);
+            this.mapY[bcr.bottom] ? this.mapY[bcr.bottom].push(position.length - 1) : (this.mapY[Math.floor(+bcr.bottom)] = [position.length - 1]);
 
         }
         //console.log(this.mapX, this.mapY, this.position);
@@ -177,13 +175,13 @@ export default class ReferenceLine implements referenceLine {
 
     getLine(x: number[], y: number[], isCenter: boolean): drawCoordinate {
         let options: setting = this.options;
-        let v: number[] = this.mapX[x[0]] || [];
-        let h: number[] = this.mapY[y[0]] || [];
+        let v: number[] = this.mapX[Math.floor(x[0])] || [];
+        let h: number[] = this.mapY[Math.floor(y[0])] || [];
 
         let tempV: number[] = [...y];
         let tempH: number[] = [...x];
-        let vLine: {[x:string]:number} = {x: x[0]};
-        let hLine: {[y:string]:number} = {y: y[0]};
+        let vLine: { [x: string]: number } = {x: x[0]};
+        let hLine: { [y: string]: number } = {y: y[0]};
         let limit: number = isCenter ? 3 : 2;
 
         for (let i of v) {
@@ -210,9 +208,9 @@ export default class ReferenceLine implements referenceLine {
         return <drawCoordinate>{vLine: tempV.length > limit ? vLine : null, hLine: tempH.length > limit ? hLine : null}
     }
 
-    move(evt: any, isSimulate: boolean) :void{
+    move(evt: any, isSimulate: boolean): void {
         //console.log(evt.clientX, evt.clientY);
-        let l: number=0, t: number=0;
+        let l: number = 0, t: number = 0;
         let p = this.target.getBoundingClientRect();
         if (this.options.drag) {
             let range: ClientRect = this.getRange();
@@ -230,24 +228,24 @@ export default class ReferenceLine implements referenceLine {
             t < minTop && (t = minTop);
             t > maxTop && (t = maxTop);
             //console.log("minLeft:", minLeft, 'maxLeft:', maxLeft, 'minTop:', minTop, 'maxTop:', maxTop);
-            this.target.style.left = l + "px";
-            this.target.style.top = t + "px";
+            this.target.style.left = (l || 0) + "px";
+            this.target.style.top = (t || 0) + "px";
         }
         this.options.move.apply(this, [evt, this.target, l, t]);
         this.clearRect();
         p = this.target.getBoundingClientRect();
-        this.drawLine([p.left, p.right], [p.top, p.bottom],false);
-        this.drawLine([p.right, p.left], [p.bottom, p.top],false);
+        this.drawLine([p.left, p.right], [p.top, p.bottom], false);
+        this.drawLine([p.right, p.left], [p.bottom, p.top], false);
         this.drawLine([_.divide(_.add(p.right, p.left), 2), p.left, p.right], [_.divide(_.add(p.bottom, p.top), 2), p.top, p.bottom], true);
 
     }
 
-    initStyle() :void{
-        let ele:any = this.ele = doc.createElement('canvas');
+    initStyle(): void {
+        let ele: any = this.ele = doc.createElement('canvas');
         let options = this.options;
         this.canvas = ele;
-        ele.width = doc.documentElement&&doc.documentElement.clientWidth;
-        ele.height = doc.documentElement&&doc.documentElement.clientHeight;
+        ele.width = doc.documentElement && doc.documentElement.clientWidth;
+        ele.height = doc.documentElement && doc.documentElement.clientHeight;
         ele.style.position = "fixed";
         ele.style.left = 0;
         ele.style.top = 0;
@@ -262,7 +260,7 @@ export default class ReferenceLine implements referenceLine {
         this.ctx.setLineDash([1, 1]);
     }
 
-    drawVLine(x:number, ys:number, ye:number):void {
+    drawVLine(x: number, ys: number, ye: number): void {
         x = Math.floor(x);
         ys = Math.floor(ys);
         ye = Math.floor(ye);
@@ -273,7 +271,7 @@ export default class ReferenceLine implements referenceLine {
         this.ctx.stroke();
     }
 
-    drawHLine(y:number, xs:number, xe:number):void {
+    drawHLine(y: number, xs: number, xe: number): void {
         y = Math.floor(y);
         xs = Math.floor(xs);
         xe = Math.floor(xe);
@@ -285,15 +283,15 @@ export default class ReferenceLine implements referenceLine {
 
     }
 
-    drawLine(x:number[], y:number[], isCenter:boolean):void {
-        let temp:drawCoordinate = this.getLine(x, y, isCenter);
+    drawLine(x: number[], y: number[], isCenter: boolean): void {
+        let temp: drawCoordinate = this.getLine(x, y, isCenter);
         let options = this.options;
         options.hLine && temp.hLine && this.drawHLine(temp.hLine.y, temp.hLine.start, temp.hLine.end);
         options.vLine && temp.vLine && this.drawVLine(temp.vLine.x, temp.vLine.start, temp.vLine.end);
 
     }
 
-    clearRect() :void{
+    clearRect(): void {
         this.ctx.clearRect(0, 0, this.ele.width, this.ele.height);
     }
 
@@ -304,51 +302,52 @@ export default class ReferenceLine implements referenceLine {
         return ele.getBoundingClientRect()
     }
 
-    ArrowLeft(offset:number) :void{
+    ArrowLeft(offset: number): void {
         this.x = 0;
         this.y = 0;
         this.move({
             clientX: -offset,
             clientY: 0
-        },false);
+        }, false);
 
     }
 
-    ArrowRight(offset:number):void {
+    ArrowRight(offset: number): void {
         this.x = 0;
         this.y = 0;
         this.move({
             clientX: offset,
             clientY: 0
-        },false)
+        }, false)
     }
 
-    ArrowDown(offset:number) :void{
+    ArrowDown(offset: number): void {
         this.x = 0;
         this.y = 0;
         this.move({
             clientX: 0,
             clientY: offset
-        },false)
+        }, false)
     }
 
-    ArrowUp(offset:number) :void{
+    ArrowUp(offset: number): void {
         this.x = 0;
         this.y = 0;
         this.move({
             clientX: 0,
             clientY: -offset
-        },false)
+        }, false)
     }
 
-    isItem(evt:any) :boolean|Node|Element{
+    isItem(evt: any): boolean | Node | Element {
+
         let match = this.options.item.match(this.regExp);
         let m4 = match[4] && match[4].replace(/["'\]]/g, "");
         if (!match) {
             return false
         }
         if (match[2] === '.') {
-            for (let v =evt.target;v;v=v.parentNode) {
+            for (let v = evt.target; v; v = v.parentNode) {
                 if (v.nodeType !== 1) {
                     continue
                 }
@@ -359,7 +358,7 @@ export default class ReferenceLine implements referenceLine {
 
         }
         if (match[2] === '[') {
-            for (let v =evt.target;v;v=v.parentNode) {
+            for (let v = evt.target; v; v = v.parentNode) {
                 if (v.nodeType !== 1) {
                     continue
                 }
