@@ -335,11 +335,12 @@
             return false;
         }
 
-        win
-    .
-        ReferenceLine = ReferenceLine;
-    }
 
+    }
+    win.ReferenceLine = function(opt){
+       return  new ReferenceLine(opt);
+    }
+}
 )(document, window);
 
 
