@@ -60,7 +60,7 @@
                         }, 6000)
                     }
 
-                }, false)reference-line.ts
+                }, false)
             }
             doc.addEventListener('wheel', function (evt) {
                 if (cache.isShow) {
