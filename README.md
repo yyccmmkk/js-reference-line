@@ -44,7 +44,10 @@ js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以�
                       //元素拖动时勾子，提供事年对象，当前移动的元素，及，移动的距离，left top
                       },
                 }).init()
+### typescript版 demo
 
+        git@github.com:yyccmmkk/webpackSplitChunks.git
 
+本demo 已经配置好开发及构建策略,webpack + typescript + splitChunks，
 
 
