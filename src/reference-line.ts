@@ -5,9 +5,9 @@
  */
 import {fromEvent, Unsubscribable} from 'rxjs';
 import {throttleTime, auditTime} from 'rxjs/operators';
+import {defaultsDeep, divide, add} from 'lodash';
 
-let _ = require('lodash');
-let win: Window = window;
+
 let doc: Document = document;
 
 interface setting {
@@ -37,8 +37,11 @@ const DEFAULTS: setting = {
         let _body = doc.querySelector('body');
         _body && _body.appendChild(ele);
     },
-    move: function () {
-        //
+    move: (event: any, ele: HTMLElement, x: number, y: number) => {
+        // 当前元素，x 对应style left ，y 对应style top
+    },
+    end: (ele: HTMLElement, x: number, y: number) => {
+        //当前元素，x 对应style left ，y 对应style top
     }
 };
 
@@ -58,7 +61,7 @@ export default class ReferenceLine implements referenceLine {
     [index: string]: any;
 
     constructor(opt: setting) {
-        this.options = _.defaultsDeep(opt, DEFAULTS, {})
+        this.options = defaultsDeep({}, opt, DEFAULTS)
     }
 
     /**
@@ -108,6 +111,7 @@ export default class ReferenceLine implements referenceLine {
             }
         });
         fromEvent(box, 'mousedown').subscribe((evt: any) => {
+            debugger;
             evt.target.nodeName !== "INPUT" && evt.target.nodeName !== "TEXTAREA" && evt.target.nodeName !== "SELECT" && evt.preventDefault();
             let ele: any;
             if (!(ele = _this.isItem(evt))) {
@@ -119,6 +123,7 @@ export default class ReferenceLine implements referenceLine {
             _this.target = ele;
             _this.sl = parseInt(ele.style.left);
             _this.st = parseInt(ele.style.top);
+
             if (_this.options.isMultiMove) {
                 _this.multiMoveDo();
             }
@@ -142,9 +147,12 @@ export default class ReferenceLine implements referenceLine {
             }
             subscriptionMove && subscriptionMove.unsubscribe();
             this.clearRect();
+            options.end.apply(this, [this.target, cache.x || this.sl, cache.y || this.st]);
+
         });
 
         fromEvent(box, 'click').subscribe(() => {
+            debugger;
             this.target && (this.target.skip = null);
             //subscriptionMove.unsubscribe();
             this.clearRect();
@@ -162,7 +170,7 @@ export default class ReferenceLine implements referenceLine {
         this.mapY = {};
         this.mapH = {};//hypotenuse map
         let items = doc.querySelectorAll(this.options.item);
-        for (let v of items) {
+        for (let v of items as any) {
             v.isRFItem = true;
 
             if (v.skip) {
@@ -172,15 +180,15 @@ export default class ReferenceLine implements referenceLine {
             let bcr = v.getBoundingClientRect();
             let xCenter;
             let yCenter;
-            let wh = _.divide(bcr.width, bcr.height);
+            let wh = divide(bcr.width, bcr.height);
 
             position.push(bcr);
             this.mapX[bcr.left] ? this.mapX[bcr.left].push(position.length - 1) : (this.mapX[bcr.left] = [position.length - 1]);
             this.mapX[bcr.right] ? this.mapX[bcr.right].push(position.length - 1) : (this.mapX[bcr.right] = [position.length - 1]);
 
             if (this.options.center) {
-                xCenter = Math.floor(_.divide(_.add(bcr.right, bcr.left), 2));
-                yCenter = Math.floor(_.divide(_.add(bcr.top, bcr.bottom), 2));
+                xCenter = Math.floor(divide(add(bcr.right, bcr.left), 2));
+                yCenter = Math.floor(divide(add(bcr.top, bcr.bottom), 2));
                 this.mapX[xCenter] ? this.mapX[xCenter].push(position.length - 1) : (this.mapX[xCenter] = [position.length - 1]);
                 this.mapY[yCenter] ? this.mapY[yCenter].push(position.length - 1) : (this.mapY[yCenter] = [position.length - 1]);
             }
@@ -269,12 +277,14 @@ export default class ReferenceLine implements referenceLine {
             this.target.style.top = (t || 0) + "px";
 
         }
+        cache.x = l;
+        cache.y = t;
         this.options.move.apply(this, [evt, this.target, l, t]);
         this.clearRect();
         p = this.target.getBoundingClientRect();
         this.drawLine([p.left, p.right], [p.top, p.bottom], false);
         this.drawLine([p.right, p.left], [p.bottom, p.top], false);
-        this.drawLine([_.divide(_.add(p.right, p.left), 2), p.left, p.right], [_.divide(_.add(p.bottom, p.top), 2), p.top, p.bottom], true);
+        this.drawLine([divide(add(p.right, p.left), 2), p.left, p.right], [divide(add(p.bottom, p.top), 2), p.top, p.bottom], true);
 
     }
 
@@ -373,12 +383,14 @@ export default class ReferenceLine implements referenceLine {
      * @constructor
      */
     ArrowLeft(offset: number): void {
+        let cache = this.options.cache;
         this.x = 0;
         this.y = 0;
         this.move({
             clientX: -offset,
             clientY: 0
         }, false);
+        this.options.end.apply(this, [this.target, cache.x || this.sl, cache.y || this.st]);
 
     }
 
@@ -388,12 +400,14 @@ export default class ReferenceLine implements referenceLine {
      * @constructor
      */
     ArrowRight(offset: number): void {
+        let cache = this.options.cache;
         this.x = 0;
         this.y = 0;
         this.move({
             clientX: offset,
             clientY: 0
-        }, false)
+        }, false);
+        this.options.end.apply(this, [this.target, cache.x || this.sl, cache.y || this.st]);
     }
 
     /**
@@ -402,12 +416,14 @@ export default class ReferenceLine implements referenceLine {
      * @constructor
      */
     ArrowDown(offset: number): void {
+        let cache = this.options.cache;
         this.x = 0;
         this.y = 0;
         this.move({
             clientX: 0,
             clientY: offset
-        }, false)
+        }, false);
+        this.options.end.apply(this, [this.target, cache.x || this.sl, cache.y || this.st]);
     }
 
     /**
@@ -416,12 +432,14 @@ export default class ReferenceLine implements referenceLine {
      * @constructor
      */
     ArrowUp(offset: number): void {
+        let cache = this.options.cache;
         this.x = 0;
         this.y = 0;
         this.move({
             clientX: 0,
             clientY: -offset
-        }, false)
+        }, false);
+        this.options.end.apply(this, [this.target, cache.x || this.sl, cache.y || this.st]);
     }
 
     /**
@@ -438,7 +456,10 @@ export default class ReferenceLine implements referenceLine {
         let tempBottomArray = [];
         let tempMap = new Map();
         cache.multiItems = document.querySelectorAll(options.moveItem);
-        if (cache.multiItems.length < 1) {return};
+        if (cache.multiItems.length < 1) {
+            return
+        }
+        ;
         for (let v of cache.multiItems) {
             let bcr = v.getBoundingClientRect();
             tempLeftArray.push(bcr.left);
@@ -454,6 +475,7 @@ export default class ReferenceLine implements referenceLine {
         cache.heightMulti = Math.max(...tempBottomArray) - minY;
         this.sl = parseInt(tempMap.get(minX).style.left);
         this.st = parseInt(tempMap.get(minY).style.top);
+        this.options.end.apply(this, [this.target, cache.x || this.sl, cache.y || this.st]);
     }
 
     /**
@@ -493,3 +515,4 @@ export default class ReferenceLine implements referenceLine {
 
 
 }
+export {ReferenceLine}

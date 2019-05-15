@@ -40,14 +40,23 @@ js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以�
                       //画布生成勾子，可以自定画布元素
                           doc.querySelector('body').appendChild(ele);
                       },
-                      move: function (evt,ele,l,t) {
+                      move: function (evt,ele,left,top) {
                       //元素拖动时勾子，提供事年对象，当前移动的元素，及，移动的距离，left top
                       },
+                      end:function(ele,left,top){
+                      
+                      }
                 }).init()
 ### typescript版 demo
 
-        git@github.com:yyccmmkk/webpackSplitChunks.git
+    git@github.com:yyccmmkk/webpackSplitChunks.git
 
-本demo 已经配置好开发及构建策略,webpack + typescript + splitChunks，
+### react +redux demo
+    
+    https://github.com/yyccmmkk/zt-editor/tree/react-zt-editor
+    在Main.tsx 中可以看到调用方式
 
-
+### 更新
+2019.5.15 
+            
+    添加移动结束勾子，end 在移动结束后会调用此方法，在使用框架时可以在使用结束时对数据进行修改
