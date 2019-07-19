@@ -60,6 +60,19 @@ export default class ReferenceLine implements referenceLine {
 
     [index: string]: any;
 
+    st: any;
+    sl: any;
+    canvas: any;
+    ctx: any;
+    x: any;
+    y: any;
+    target: any;
+    mapX: any;
+    mapY: any;
+    mapH: any;
+    position: any[]=[];
+    ele: any;
+
     constructor(opt: setting) {
         this.options = defaultsDeep({}, opt, DEFAULTS)
     }
