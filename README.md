@@ -25,7 +25,7 @@ js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以�
                       container: doc,//监听鼠标移动的元素
                       range: doc,
                       item: '[data-query="item"]',//需要定位的成员选择器
-                      cache: {},
+                      delay:6000, //参考线 生成后多少秒消失
                       zIndex: 0,//参考线层级
                       drag: true,//是否开启拖放,
                       vLine: true,//是否开启垂直参考线
@@ -37,14 +37,15 @@ js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以�
                       hypotenuse: true,//是否开启对角线对齐 //暂没开发
                       directionKey: true,//是否开启方向键控制
                       createCanvas: function (ele) {
-                      //画布生成勾子，可以自定画布元素
+                      //画布生成勾子，可以自定画布元素 提供对canvas 的操作能力
                           doc.querySelector('body').appendChild(ele);
                       },
                       move: function (evt,ele,left,top) {
-                      //元素拖动时勾子，提供事年对象，当前移动的元素，及，移动的距离，left top
+                      //元素拖动时勾子，提供事件对象，当前移动的元素，及，移动的距离，left top
                       },
+                      //移动完成回调 ele: 当前元素 left top 对应当前的元素 style 
                       end:function(ele,left,top){
-                      
+                      //当前元素，x 对应style left ，y 对应style top 主要用于数据驱动框架数据更新
                       }
                 }).init()
 ### typescript版 demo
@@ -57,7 +58,11 @@ js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以�
     在Main.tsx 中可以看到调用方式
 
 ### 更新
-
+    2019.8.21
+    ts 版本优化，建议使用ts 版本，js 版本不再维护
+    新增delay 配置项用于设置对齐线多少ms 消失
+    鼠标拖动对齐后不再立即消失 而是根据 delay时间
+    
 
     2019.7.19
     临时修复TS高版本报错信息
