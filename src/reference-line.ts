@@ -120,7 +120,6 @@ export default class ReferenceLine implements referenceLine {
                         clearTimeout(cache._h);
                     }
                     cache._h = setTimeout(() => {
-                        console.log('timeout:::')
                         _this.canvas.style.display = 'none';
                         cache.isShow = null;
                     }, options.delay)
@@ -175,7 +174,6 @@ export default class ReferenceLine implements referenceLine {
             if (cache.isMove) {
                 this.autoMove(cache.bcr, cache.distanceX > 0, cache.distanceY > 0);
             }
-            debugger;
             this.createLine();
             options.end.apply(this, [this.target, cache.x || this.sl, cache.y || this.st]);
             cache.isMove = false;
@@ -245,7 +243,7 @@ export default class ReferenceLine implements referenceLine {
             this.mapY[bcr.bottom] ? this.mapY[bcr.bottom].push(position.length - 1) : (this.mapY[Math.round(+bcr.bottom)] = [position.length - 1]);
 
         }
-        console.log(this.mapX, this.mapY, this.position);
+        //console.log(this.mapX, this.mapY, this.position);
     }
 
     /**
@@ -339,8 +337,8 @@ export default class ReferenceLine implements referenceLine {
         let resultY: any;
         let cache = this.options.cache;
         const {left, top, width, height} = bcr;
-        console.log('left::', left, "top::", top, isMoveToRight, isMoveToBottom);
-        console.log("mapX::", Object.keys(this.mapX), "mapY::", Object.keys(this.mapY), "mapH::", Object.keys(this.mapH));
+        //console.log('left::', left, "top::", top, isMoveToRight, isMoveToBottom);
+        //console.log("mapX::", Object.keys(this.mapX), "mapY::", Object.keys(this.mapY), "mapH::", Object.keys(this.mapH));
 
         resultX = this.autoMoveProcess(Object.keys(this.mapX), left, left + width, isMoveToRight);
         resultY = this.autoMoveProcess(Object.keys(this.mapY), top, top + height, isMoveToBottom);
@@ -356,7 +354,7 @@ export default class ReferenceLine implements referenceLine {
             this.target.style.top = `${y - cache.boxTop}px`;
         }
 
-        console.log("XY:::", resultX, resultY);
+        //console.log("XY:::", resultX, resultY);
 
     }
 
@@ -493,7 +491,7 @@ export default class ReferenceLine implements referenceLine {
      * 清空画布
      */
     clearRect(): void {
-        console.log('clear::::::::')
+        //console.log('clear::::::::')
         this.ctx.clearRect(0, 0, this.ele.width, this.ele.height);
     }
 
