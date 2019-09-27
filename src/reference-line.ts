@@ -24,7 +24,7 @@ const DEFAULTS: setting = {
     moveItem: '[data-select="multi"]',//多选移动
     auto: 15, // 自动吸附功能 距离多少px范围内自行吸附
     cache: {},
-    auditTime:5, // ms moue 移动时抖动 数值截越小越平滑性能开销越高
+    auditTime: 5, // ms moue 移动时抖动 数值截越小越平滑性能开销越高
     zIndex: 0,//参考线层级
     drag: true,//是否开启拖放,
     vLine: true,//是否开启垂直参考线
@@ -88,8 +88,8 @@ export default class ReferenceLine implements referenceLine {
         this.initStyle();
         this.bindEvent();
         let box = document.querySelector(this.options.range);
-        this.options.cache.boxLeft = box&&box.getBoundingClientRect().left + box.clientLeft || 0;
-        this.options.cache.boxTop = box&&box.getBoundingClientRect().top + box.clientTop || 0;
+        this.options.cache.boxLeft = box && box.getBoundingClientRect().left + box.clientLeft || 0;
+        this.options.cache.boxTop = box && box.getBoundingClientRect().top + box.clientTop || 0;
     }
 
     /**
@@ -346,7 +346,7 @@ export default class ReferenceLine implements referenceLine {
         if (typeof resultX !== 'boolean') {
             const {value, isMin} = resultX;
             let x = isMin ? value : value - width;
-            this.target.style.left = `${x-cache.boxLeft}px`;
+            this.target.style.left = `${x - cache.boxLeft}px`;
         }
         if (typeof resultY !== 'boolean') {
             const {value, isMin} = resultY;
@@ -399,11 +399,11 @@ export default class ReferenceLine implements referenceLine {
         this.options.move.apply(this, [evt, this.target, cache.x, cache.y]);
         this.clearRect();
         this.createLine();
-       /* let {left, top, right, bottom} = cache.bcr = this.target.getBoundingClientRect();
-        this.drawLine([left, right], [top, bottom], false);
-        this.drawLine([right, left], [bottom, top], false);
-        this.drawLine([divide(add(right, left), 2), left, right], [divide(add(bottom, top), 2), top, bottom], true);
-*/
+        /* let {left, top, right, bottom} = cache.bcr = this.target.getBoundingClientRect();
+         this.drawLine([left, right], [top, bottom], false);
+         this.drawLine([right, left], [bottom, top], false);
+         this.drawLine([divide(add(right, left), 2), left, right], [divide(add(bottom, top), 2), top, bottom], true);
+ */
     }
 
     /**
@@ -429,8 +429,8 @@ export default class ReferenceLine implements referenceLine {
         this.ctx.setLineDash([1, 1]);
     }
 
-    createLine(){
-        let cache =this.options.cache;
+    createLine() {
+        let cache = this.options.cache;
         let {left, top, right, bottom} = cache.bcr = this.target.getBoundingClientRect();
         this.drawLine([left, right], [top, bottom], false);
         this.drawLine([right, left], [bottom, top], false);
@@ -503,8 +503,8 @@ export default class ReferenceLine implements referenceLine {
         let ele = options.range.nodeType ? doc.documentElement : doc.querySelector(options.range);
         ele = ele || doc.documentElement;
         return {
-            width:ele.clientWidth,
-            height:ele.clientHeight
+            width: ele.clientWidth,
+            height: ele.clientHeight
         }
     }
 

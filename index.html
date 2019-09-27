@@ -2,12 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title ruler</title>
+    <title>demo reference line</title>
     <style type="text/css">
         *{margin:0;padding:0}
-        .box{width:800px;height:800px;margin:0 auto;border:1px solid green;position:relative}
-        .box div{position:absolute;background:green}
+        body{background:#f3f3f3;}
+        .box{width:800px;height:800px;margin:0 auto;border:100px solid #000;position:relative;}
+        .box div{position:absolute;background:#2196f3}
     </style>
+
+
 </head>
 <body>
 <!--<div style="height:1000px">向下滚动</div>-->
@@ -21,23 +24,5 @@
     </div>
 </div>
 
-
-<script src="extern/lodash.js"></script>
-<script src="src/reference-line.js"></script>
-<script>
-    new ReferenceLine({
-        item:'[data-query="item"]',
-        range:'[data-query="canvasBox"]',
-        drag: true,
-        zIndex: 1,//参考线层级
-        lineColor:'red',
-        lineWidth:1,
-        offset: 40,//参考线头尾的延伸距离
-        move:function(evt,ele,l,t){
-
-        }
-
-    }).init();
-</script>
 </body>
 </html>
