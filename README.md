@@ -9,6 +9,40 @@ js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以�
 + 当前元素与所有可对齐元素进行吸附无论在不在视窗内，
 + 当前元素吸附与移动方向坐标点最近的元素，也就是说吸附和移动的方向+吸附范围有关，如果元素A在远离元素B 即便在吸附范围也不会自动吸附，
 + tips: 如果需要精确控制建议使用方向键进行控制，按下方向键不会触发吸附
+  
+支持对齐到网格功能，需要开启自动吸附，移动完成后自动吸附到网格，默认关闭。
++ 支持指定画布网格宽高
+    
+      grid: {width:15,height:15}, //指定网格宽高
+      
+      grid:15 // 相当于grid:{width:15,height:15}
+      
++ 开启吸附到网格默认大小为15px
+
+      grid:true  // 相当于grid:{width:15,height:15}
+
+支持对齐吸附到指定点位,可以指定吸附到指定X坐位或Y坐标位
+
+     new ReferenceLine({
+                item: '[data-query="item"]',
+                range: '.box',
+                drag: true,
+                zIndex: 1,//参考线层级
+                lineColor: 'red',
+                lineWidth: 1,
+                offset: 40,//参考线头尾的延伸距离
+                grid: [{x: 200, y: 250},{x:300},{y:700}], //吸附到指定点位
+                move: function (evt: any, ele: any, l: number, t: number): void {
+                    //
+                },
+                end: function (ele: HTMLElement, x: number, y: number) {
+                    console.log('end:', x, y)
+                }
+    
+    
+            }).init();
+  
+  
     
 ### 兼容性
 没有进行兼容性测试，因为自己的项目只关注最新chrome, 源代码中使用了canvas ES6 语法，如有需要兼容请自行处理。
@@ -54,6 +88,7 @@ webpack 使用方式参见本例，http://localhost:8081
               center: true,//是否开启中心对齐
               hypotenuse: true,//是否开启对角线对齐 //暂没开发
               directionKey: true,//是否开启方向键控制
+              grid: [{x: 200, y: 250}],// 指定对齐到画布点位，可以传的类型 number|{width:number,height:number}|{x?:number,y?:number}[]
               createCanvas: function (ele) {
               //画布生成勾子，可以自定画布元素 提供对canvas 的操作能力
                   doc.querySelector('body').appendChild(ele);
@@ -76,6 +111,9 @@ webpack 使用方式参见本例，http://localhost:8081
     在Main.tsx 中可以看到调用方式
 
 ### 更新
+
+    2019.9.29
+    新增对齐到网格功能，默认画布网格为15px,可以指定对齐网格大小，可以分别指定宽、高或是对齐到指定点位
 
     2019.9.27
     更新项目目录，拉下本项目后 按装依赖后即可看到demo

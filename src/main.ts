@@ -29,8 +29,12 @@ export class Main {
             lineColor: 'red',
             lineWidth: 1,
             offset: 40,//参考线头尾的延伸距离
+            grid: true, // 开启吸附到网格
             move: function (evt: any, ele: any, l: number, t: number): void {
                 //
+            },
+            end: function (ele: HTMLElement, x: number, y: number) {
+                console.log('end:', x, y)
             }
 
 

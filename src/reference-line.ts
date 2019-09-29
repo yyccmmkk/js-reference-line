@@ -1,5 +1,5 @@
 /**
- * version:1.1.1
+ * version:1.2.0
  * Created by yyccmmkk on 2018/10/18.
  * E-mail:36995800@163.com
  * 画布拖动对齐参考线
@@ -11,8 +11,12 @@ import {defaultsDeep, divide, add} from 'lodash';
 
 let doc: Document = document;
 
+type Grid = boolean | number | { width: number, height: number } | { x?: number, y?: number }[]
+
 interface setting {
     [propName: string]: any;
+
+    grid?: Grid
 
 }
 
@@ -29,6 +33,7 @@ const DEFAULTS: setting = {
     drag: true,//是否开启拖放,
     vLine: true,//是否开启垂直参考线
     hLine: true,//是否开启水平参考线
+    grid: false, //是否开启对齐到网格
     lineColor: '#07f7f9',//参考线颜色
     offset: 20,//参考线头尾的延伸距离
     lineWidth: 1,//参考线宽度
@@ -49,16 +54,13 @@ const DEFAULTS: setting = {
     }
 };
 
-interface referenceLine {
-    [index: string]: any;
-}
 
 interface drawCoordinate {
     vLine: { [x: string]: number };
     hLine: { [y: string]: number };
 }
 
-export default class ReferenceLine implements referenceLine {
+export default class ReferenceLine {
     regExp: RegExp = /([a-zA-Z]+)?([\.#\[])?([\w-_]+)?(?:=([\w-_"\]]+))?/;
     options: setting;
 
@@ -76,9 +78,12 @@ export default class ReferenceLine implements referenceLine {
     mapH: any;
     position: any[] = [];
     ele: any;
+    gridX: any[] = [];
+    gridY: any[] = [];
+
 
     constructor(opt: setting) {
-        this.options = defaultsDeep({}, opt, DEFAULTS)
+        this.options = defaultsDeep(opt, DEFAULTS, {})
     }
 
     /**
@@ -87,9 +92,12 @@ export default class ReferenceLine implements referenceLine {
     init() {
         this.initStyle();
         this.bindEvent();
-        let box = document.querySelector(this.options.range);
-        this.options.cache.boxLeft = box && box.getBoundingClientRect().left + box.clientLeft || 0;
-        this.options.cache.boxTop = box && box.getBoundingClientRect().top + box.clientTop || 0;
+        let options = this.options;
+        let box = document.querySelector(options.range);
+        let bcr = box && box.getBoundingClientRect();
+        options.cache.boxLeft = bcr && bcr.left + box.clientLeft || 0;
+        options.cache.boxTop = bcr && bcr.top + box.clientTop || 0;
+        this.initGrid(bcr);
     }
 
     /**
@@ -191,6 +199,45 @@ export default class ReferenceLine implements referenceLine {
             this.clearRect();
 
         });
+
+    }
+
+    initGrid(bcr: any) {
+        let {grid} = this.options;
+
+        let {cache: {boxLeft: baseX, boxTop: baseY}} = this.options;
+        if (!grid) {
+            return;
+        }
+        let x: number = 15, y: number = 15;
+        let type = Object.prototype.toString.call(grid);
+        switch (type) {
+            case '[object Array]':
+                for (let v of grid as any) {
+                    (typeof v.x === 'number') && this.gridX.push(v.x + baseX);
+                    (typeof v.y === 'number') && this.gridY.push(v.y + baseY);
+                }
+                break;
+            case '[object Number]':
+                x = y = grid as number;
+                break;
+            case '[object Object]':
+                x = (grid as any).width;
+                y = (grid as any).height;
+                break;
+
+        }
+        if (type === '[object Number]' || type === '[object Object]' ||type === '[object Boolean]') {
+            for (let i = 0, len = Math.floor(bcr.width / x); i < len; i++) {
+                this.gridX.push(i * x + baseX)
+            }
+            for (let i = 0, len = Math.floor(bcr.height / y); i < len; i++) {
+                this.gridY.push(i * y + baseY)
+            }
+        }
+
+
+        console.log('gridX', this.gridX, 'gridY', this.gridY)
 
     }
 
@@ -340,18 +387,22 @@ export default class ReferenceLine implements referenceLine {
         //console.log('left::', left, "top::", top, isMoveToRight, isMoveToBottom);
         //console.log("mapX::", Object.keys(this.mapX), "mapY::", Object.keys(this.mapY), "mapH::", Object.keys(this.mapH));
 
-        resultX = this.autoMoveProcess(Object.keys(this.mapX), left, left + width, isMoveToRight);
-        resultY = this.autoMoveProcess(Object.keys(this.mapY), top, top + height, isMoveToBottom);
+        resultX = this.autoMoveProcess([...this.gridX, ...Object.keys(this.mapX)], left, left + width, isMoveToRight);
+        resultY = this.autoMoveProcess([...this.gridY, ...Object.keys(this.mapY)], top, top + height, isMoveToBottom);
+
 
         if (typeof resultX !== 'boolean') {
             const {value, isMin} = resultX;
             let x = isMin ? value : value - width;
-            this.target.style.left = `${x - cache.boxLeft}px`;
+
+            cache.x = x - cache.boxLeft;
+            this.target.style.left = `${cache.x}px`;
         }
         if (typeof resultY !== 'boolean') {
             const {value, isMin} = resultY;
             let y = isMin ? value : value - height;
-            this.target.style.top = `${y - cache.boxTop}px`;
+            cache.y = y - cache.boxTop;
+            this.target.style.top = `${cache.y}px`;
         }
 
         //console.log("XY:::", resultX, resultY);
@@ -399,11 +450,7 @@ export default class ReferenceLine implements referenceLine {
         this.options.move.apply(this, [evt, this.target, cache.x, cache.y]);
         this.clearRect();
         this.createLine();
-        /* let {left, top, right, bottom} = cache.bcr = this.target.getBoundingClientRect();
-         this.drawLine([left, right], [top, bottom], false);
-         this.drawLine([right, left], [bottom, top], false);
-         this.drawLine([divide(add(right, left), 2), left, right], [divide(add(bottom, top), 2), top, bottom], true);
- */
+
     }
 
     /**
@@ -588,7 +635,7 @@ export default class ReferenceLine implements referenceLine {
         if (cache.multiItems.length < 1) {
             return
         }
-        ;
+
         for (let v of cache.multiItems) {
             let bcr = v.getBoundingClientRect();
             tempLeftArray.push(bcr.left);
