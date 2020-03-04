@@ -174,16 +174,19 @@ export default class ReferenceLine {
 
 
         fromEvent(box, 'mouseup').subscribe(() => {
-            if (this.target) {
-                this.target.skip = null;
-            }
+
             subscriptionMove && subscriptionMove.unsubscribe();
             cache._h = setTimeout(() => this.clearRect(), options.delay);
             if (cache.isMove) {
                 this.autoMove(cache.bcr, cache.distanceX > 0, cache.distanceY > 0);
             }
-            this.createLine();
-            options.end.apply(this, [this.target, cache.x || this.sl, cache.y || this.st]);
+            if (this.target) {
+                this.target.skip = null;
+                this.createLine();
+                this.target = null;
+                options.end.apply(this, [this.target, cache.x || this.sl, cache.y || this.st]);
+            }
+
             cache.isMove = false;
         });
 
@@ -227,7 +230,7 @@ export default class ReferenceLine {
                 break;
 
         }
-        if (type === '[object Number]' || type === '[object Object]' ||type === '[object Boolean]') {
+        if (type === '[object Number]' || type === '[object Object]' || type === '[object Boolean]') {
             for (let i = 0, len = Math.floor(bcr.width / x); i < len; i++) {
                 this.gridX.push(i * x + baseX)
             }
