@@ -1,46 +1,47 @@
 # js-reference-line
-js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以进行1px 移动，按下shift +方向键，可以进行10px 移动。支持四条边及中心线对齐。
-
-提供画布生成勾子支持自定义画布，
-提供移动回调。
-
-支持自动吸附对齐，目前只支持拖动完成后自动吸附（mouseup事件），默认为 正负15px范围
+js 拖动时生成各组件之间对齐线
+- ctrl+ 方向键可以进行1px 移动
+- shift +方向键，可以进行10px 移动
+- 支持四条边及中心线对齐
+- 支持动态添加对齐元素
+- 提供画布生成勾子支持自定义画布，
+- 提供移动回调
+- 提供移动结束回调
+- 支持自动吸附对齐，目前只支持拖动完成后自动吸附（mouseup事件），默认为 正负15px范围
 自动吸附对齐的规则为：
-+ 当前元素与所有可对齐元素进行吸附无论在不在视窗内，
-+ 当前元素吸附与移动方向坐标点最近的元素，也就是说吸附和移动的方向+吸附范围有关，如果元素A在远离元素B 即便在吸附范围也不会自动吸附，
-+ tips: 如果需要精确控制建议使用方向键进行控制，按下方向键不会触发吸附
+    + 当前元素与所有可对齐元素进行吸附无论在不在视窗内，
+    + 当前元素吸附与移动方向坐标点最近的元素，也就是说吸附和移动的方向+吸附范围有关，如果元素A在远离元素B 即便在吸附范围也不会自动吸附，
+    + tips: 如果需要精确控制建议使用方向键进行控制，按下方向键不会触发吸附
   
-支持对齐到网格功能，需要开启自动吸附，移动完成后自动吸附到网格，默认关闭。
-+ 支持指定画布网格宽高
+- 支持对齐到网格功能，需要开启自动吸附，移动完成后自动吸附到网格，默认关闭。
+- 支持指定画布网格宽高
     
       grid: {width:15,height:15}, //指定网格宽高
       
       grid:15 // 相当于grid:{width:15,height:15}
       
-+ 开启吸附到网格默认大小为15px
+- 开启吸附到网格默认大小为15px
 
       grid:true  // 相当于grid:{width:15,height:15}
 
-支持对齐吸附到指定点位,可以指定吸附到指定X坐位或Y坐标位
-
-     new ReferenceLine({
-                item: '[data-query="item"]',
-                range: '.box',
-                drag: true,
-                zIndex: 1,//参考线层级
-                lineColor: 'red',
-                lineWidth: 1,
-                offset: 40,//参考线头尾的延伸距离
-                grid: [{x: 200, y: 250},{x:300},{y:700}], //吸附到指定点位
-                move: function (evt: any, ele: any, l: number, t: number): void {
-                    //
-                },
-                end: function (ele: HTMLElement, x: number, y: number) {
-                    console.log('end:', x, y)
-                }
+- 支持对齐吸附到指定点位,可以指定吸附到指定X坐位或Y坐标位
     
-    
-            }).init();
+        new ReferenceLine({
+            item: '[data-query="item"]',
+            range: '.box',
+            drag: true,
+            zIndex: 1,//参考线层级
+            lineColor: 'red',
+            lineWidth: 1,
+            offset: 40,//参考线头尾的延伸距离
+            grid: [{x: 200, y: 250},{x:300},{y:700}], //吸附到指定点位
+            move: function (evt: any, ele: any, l: number, t: number): void {
+                //
+            },
+            end: function (ele: HTMLElement, x: number, y: number) {
+                console.log('end:', x, y)
+            }
+        }).init();
   
   
     
@@ -50,19 +51,7 @@ js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以�
 ### 使用
 js 版本不再维护如果需要请根据ts文件自行生成，建议使用ts 进行开发
 
-如果不使用模块化工具可以如下引用
-
-`<script src="extern/lodash.js"></script>`
-
-
-`<script src="src/reference-line.js"></script>`
-
-`<script>new ReferenceLine().init();</script>`
-
-
-如果用模块化工具请引入reference-line.umd.js
-
-webpack 使用方式参见本例，http://localhost:8081
+webpack 使用方式参见本例，http://localhost:8080
     
     npm i  
     npm run dev 
@@ -77,7 +66,7 @@ webpack 使用方式参见本例，http://localhost:8081
               auditTime:5, // ms moue 移动时抖动 数值截越小越平滑性能开销越高
               auto: 15, // 自动吸附功能 距离多少px范围内自行吸附
               item: '[data-query="item"]',//需要定位的成员选择器
-              delay:6000, //参考线 生成后多少秒消失
+              delay:6000, //参考线 生成后多少毫秒消失
               zIndex: 0,//参考线层级
               drag: true,//是否开启拖放,
               vLine: true,//是否开启垂直参考线
@@ -90,7 +79,7 @@ webpack 使用方式参见本例，http://localhost:8081
               directionKey: true,//是否开启方向键控制
               grid: [{x: 200, y: 250}],// 指定对齐到画布点位，可以传的类型 number|{width:number,height:number}|{x?:number,y?:number}[]
               createCanvas: function (ele) {
-              //画布生成勾子，可以自定画布元素 提供对canvas 的操作能力
+              //画布生成钩子，可以自定画布元素 提供对canvas 的操作能力
                   doc.querySelector('body').appendChild(ele);
               },
               move: function (evt,ele,left,top) {

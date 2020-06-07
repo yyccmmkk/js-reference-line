@@ -81,7 +81,6 @@ export default class ReferenceLine {
 	gridX: any[] = [];
 	gridY: any[] = [];
 
-
 	constructor(opt: setting) {
 		this.options = defaultsDeep(opt, DEFAULTS, {})
 	}
@@ -111,7 +110,6 @@ export default class ReferenceLine {
 		let subscriptionMove: Unsubscribable;
 		// 是否开启方向键
 		if (options.directionKey) {
-
 			fromEvent(doc, 'keydown').pipe(
 				auditTime(50)
 			).subscribe((evt: any) => {
@@ -158,7 +156,6 @@ export default class ReferenceLine {
 			if (_this.options.isMultiMove) {
 				_this.multiMoveDo();
 			}
-
 
 			if (ele.isRFItem) {
 				_this.x = evt.clientX;
@@ -246,9 +243,6 @@ export default class ReferenceLine {
 				this.gridY.push(i * y + baseY)
 			}
 		}
-
-
-		console.log('gridX', this.gridX, 'gridY', this.gridY)
 
 	}
 
