@@ -1,12 +1,12 @@
 /**
- * version:1.2.0
+ * version:1.2.3
  * Created by yyccmmkk on 2018/10/18.
  * E-mail:36995800@163.com
  * 画布拖动对齐参考线
  */
 import {fromEvent, Unsubscribable} from 'rxjs';
 import {auditTime} from 'rxjs/operators';
-import {defaultsDeep, divide, add} from 'lodash';
+import {defaultsDeep, divide, add} from 'lodash-es';
 
 
 let doc: Document = document;
@@ -38,18 +38,21 @@ const DEFAULTS: setting = {
 	offset: 20,//参考线头尾的延伸距离
 	lineWidth: 1,//参考线宽度
 	center: true,//是否开启中心对齐
-	hypotenuse: true,//是否开启对角线对齐 //暂没开发
+	hypotenuse: false,//是否开启对角线对齐 //暂没开发
 	directionKey: true,//是否开启方向键控制
 	delay: 6000,// 生成对齐线后多少ms 消失 默认为6000
 	isMultiMove: false, // 是否开启同时多个移个
-	createCanvas: function (canvas: HTMLElement) { // 创建canvas 回调，用于自定义canvas
+	createCanvas: function (canvas: HTMLElement) {
+		// 创建 canvas 回调，用于自定义canvas
 		let _body = doc.querySelector('body');
 		_body && _body.appendChild(canvas);
 	},
 	move: (event: any, ele: HTMLElement, x: number, y: number) => {
+		// 元素被移动时的回调
 		// 当前元素，x 对应style left ，y 对应style top
 	},
 	end: (ele: HTMLElement, x: number, y: number) => {
+		// 元素被移动后的回调
 		//当前元素，x 对应style left ，y 对应style top
 	}
 };
@@ -175,7 +178,7 @@ export default class ReferenceLine {
 			subscriptionMove && subscriptionMove.unsubscribe();
 			cache._h = setTimeout(() => this.clearRect(), options.delay);
 			if (cache.isMove && (cache.distanceY || cache.distanceX)) {
-				console.log(cache.isMove, cache.distanceX, cache.distanceY)
+				//console.log(cache.isMove, cache.distanceX, cache.distanceY)
 				this.autoMove(cache.bcr, cache.distanceX > 0, cache.distanceY > 0);
 			}
 			if (this.target) {
@@ -253,7 +256,7 @@ export default class ReferenceLine {
 		this.position = [];
 		this.mapX = {};
 		this.mapY = {};
-		this.mapH = {};//hypotenuse map
+		this.mapH = {}; //hypotenuse map
 		let items = doc.querySelectorAll(this.options.item);
 		for (let v of items as any) {
 			v.isRFItem = true;
@@ -335,9 +338,7 @@ export default class ReferenceLine {
 			hLine.end = Math.max(...tempH) + options.offset;
 		}
 		//console.log("vLine:", vLine, "hLine:", hLine);
-		/*if (v.length > 0 || h.length > 0) {
-				console.log('important', v, h);
-		}*/
+
 
 		return <drawCoordinate>{vLine: tempV.length > limit ? vLine : null, hLine: tempH.length > limit ? hLine : null}
 	}
@@ -385,7 +386,6 @@ export default class ReferenceLine {
 	 * 自动吸附功能
 	 */
 	autoMove(bcr: any, isMoveToRight: boolean, isMoveToBottom: boolean) {
-		console.log('autoMove')
 		let resultX: any;
 		let resultY: any;
 		let cache = this.options.cache;
@@ -472,8 +472,6 @@ export default class ReferenceLine {
 		ele.style.left = 0;
 		ele.style.top = 0;
 		ele.style.display = 'none';
-		//ele.style.backgroundColor = "#000";
-		//ele.style.opacity=0.5;
 		ele.style.zIndex = options.zIndex;
 		this.options.createCanvas.apply(this, [ele]);
 		this.ctx = ele.getContext("2d");
