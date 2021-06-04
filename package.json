@@ -1,6 +1,6 @@
 {
   "name": "js-reference-line",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "js 拖动时生成各组件之间对齐线，同时按住ctrl+ 方向键可以进行1px 移动，按下shift +方向键，可以进行10px 移动。支持四条边及中心线对齐。提供画布生成勾子支持自定义画布，\r 提供移动回调。\r 支持自动吸附对齐，目前只支持拖动完成后自动吸附（mouseup事件），默认为 正负15px范围\r 自动吸附对齐的规则为：\r     1 当前元素与所有可对齐元素进行吸附无论在不在视窗内，\r     2 当前元素吸附与移动方向坐标点最近的元素，也就是说吸附和移动的方向+吸附范围有关，如果元素A在远离元素B 即便在吸附范围也不会自动吸附，\r     tips: 如果需要精确控制建议使用方向键进行控制，按下方向键不会触发吸附",
   "main": "index.js",
   "scripts": {
@@ -11,25 +11,27 @@
     "type": "git",
     "url": "git+https://github.com/yyccmmkk/js-reference-line.git"
   },
-  "author": "",
+  "author": "yyccmmkk",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/yyccmmkk/js-reference-line/issues"
   },
   "homepage": "https://github.com/yyccmmkk/js-reference-line#readme",
   "devDependencies": {
-    "@reactivex/rxjs": "^6.5.3",
-    "@types/lodash": "^4.14.140",
-    "clean-webpack-plugin": "^3.0.0",
-    "html-webpack-plugin": "^3.2.0",
-    "lodash": "^4.17.15",
-    "rxjs": "^6.5.3",
-    "ts-lint": "^4.5.1",
-    "ts-loader": "^6.1.2",
-    "ts-node": "^8.4.1",
-    "typescript": "^3.6.3",
-    "webpack": "^4.41.0",
-    "webpack-cli": "^3.3.9",
-    "webpack-dev-server": "^3.8.1"
+    "@reactivex/rxjs": "^6.6.7",
+    "@types/lodash-es": "^4.17.4",
+    "clean-webpack-plugin": "^4.0.0-alpha.0",
+    "html-webpack-plugin": "^5.3.1",
+    "webpack": "^5.38.1",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "lodash-es": "^4.17.21",
+    "rxjs": "^7.1.0",
+    "ts-loader": "^9.2.2",
+    "ts-node": "^10.0.0",
+    "typescript": "^4.3.2"
+
   }
 }
