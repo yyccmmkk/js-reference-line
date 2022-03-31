@@ -49,6 +49,12 @@ js 拖动时生成各组件之间对齐线
 没有进行兼容性测试，因为自己的项目只关注最新chrome, 源代码中使用了canvas ES6 语法，如有需要兼容请自行处理。
 
 ### 使用
+
+使用 npm
+
+    npm i  --save reference-line
+
+使用原文件
 js 版本不再维护如果需要请根据ts文件自行生成，建议使用ts 进行开发
 
 webpack 使用方式参见本例，http://localhost:8080
